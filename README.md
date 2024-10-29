@@ -5,6 +5,7 @@
    sudo yum update -y
    sudo amazon-linux-extras install java-openjdk11 -y
    sudo yum install maven -y
+   sudo yum install git -y
    ```
 
 2. **克隆或下载项目代码**：
@@ -12,7 +13,7 @@
 
    ```sh
    cd /home/ec2-user
-   git clone <your-repo-url> java-netty-sample
+   git clone https://github.com/yunfeilu92/java-netty-sample.git
    cd java-netty-sample
    ```
 
@@ -36,5 +37,3 @@
    ```sh
    curl http://localhost:8080/api/delay/5
    ```
-
-   这将会在 5 秒后返回响应。
