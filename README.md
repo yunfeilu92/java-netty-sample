@@ -28,12 +28,12 @@
     - 运行以下命令来启动 Netty 服务器：
 
    ```sh
-   java -cp target/classes:~/.m2/repository/io/netty/netty-all/4.1.68.Final/netty-all-4.1.68.Final.jar org.example.NettyServer
+   nohup java -jar target/java-netty-sample-1.0-SNAPSHOT.jar &
    ```
 
 5. **测试 API**：
     - 服务器启动后，你可以通过浏览器或工具（如 `curl` 或 Postman）访问 API。例如：
 
    ```sh
-   curl http://localhost:8080/api/delay/5
+   curl http://localhost:8081/api/delay/5
    ```
