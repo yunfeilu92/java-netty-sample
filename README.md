@@ -35,5 +35,5 @@
     - 服务器启动后，你可以通过浏览器或工具（如 `curl` 或 Postman）访问 API。例如：
 
    ```sh
-   curl http://localhost:8081/api/delay/5
+   curl -k -v --http2 http://127.0.0.1:8443/api/delay/2 
    ```

@@ -24,6 +24,11 @@
             <artifactId>netty-codec-http2</artifactId>
             <version>4.1.68.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.70</version> <!-- Check for the latest version -->
+        </dependency>
     </dependencies>
 
     <build>
