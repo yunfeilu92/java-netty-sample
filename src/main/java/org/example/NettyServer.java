@@ -1,55 +1,51 @@
-// NettyServer.java
 package org.example;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
 
-public class NettyServer {
+public final class NettyServer {
 
-    private final int port;
+    private static final int PORT = 8443;
 
-    public NettyServer(int port) {
-        this.port = port;
-    }
+    public static void main(String[] args) throws Exception {
+        SslContext sslCtx = Http2Util.createSSLContext(true);
 
-    public void start() throws InterruptedException {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup group = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
+            b.option(ChannelOption.SO_BACKLOG, 1024);
+            b.group(group)
                     .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        public void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast(new HttpServerCodec());
-                            ch.pipeline().addLast(new HttpObjectAggregator(512 * 1024));
-                            ch.pipeline().addLast(new HttpServerExpectContinueHandler());
-                            ch.pipeline().addLast(new NettyServerHandler());
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            if (sslCtx != null) {
+                                ch.pipeline()
+                                        .addLast(sslCtx.newHandler(ch.alloc()), Http2Util.getServerAPNHandler());
+                            }
                         }
-                    })
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture f = b.bind(port).sync();
-            f.channel().closeFuture().sync();
+                    });
+
+            Channel ch = b.bind(PORT)
+                    .sync()
+                    .channel();
+
+            ch.closeFuture()
+                    .sync();
         } finally {
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
+            group.shutdownGracefully();
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        int port = 8081;
-        new NettyServer(port).start();
-    }
 }
