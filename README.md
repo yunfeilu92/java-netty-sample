@@ -3,9 +3,11 @@
 
    ```sh
    sudo yum update -y
-   sudo amazon-linux-extras install java-openjdk11 -y
+   sudo yum install -y java-11-amazon-corretto -y
    sudo yum install maven -y
    sudo yum install git -y
+   sudo alternatives --config java # 选择 Amazon Corretto 11
+   java -version
    ```
 
 2. **克隆或下载项目代码**：
@@ -35,5 +37,5 @@
     - 服务器启动后，你可以通过浏览器或工具（如 `curl` 或 Postman）访问 API。例如：
 
    ```sh
-   curl -k -v --http2 http://127.0.0.1:8443/api/delay/2 
+   curl -k -v --http2 https://127.0.0.1:8443/api/delay/2 
    ```
